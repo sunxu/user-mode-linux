@@ -1,0 +1,35 @@
+# Python files
+*.py[cod]
+
+# Object files
+*.o
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Backup files
+*.swp
+
+# Tar files
+*.tar*
+
+# source code
+linux-4.4
+
+# bin
+linux
+
+# config file
+.uml_config

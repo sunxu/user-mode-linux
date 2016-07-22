@@ -1,0 +1,128 @@
+#!/bin/sh
+
+PROGNAME="$0"
+PROGARGS="$@"
+CONFIG=$(dirname "$PROGNAME")/.uml_config
+
+if [ -f $CONFIG ]; then
+    source $CONFIG
+fi
+
+while test $# -gt 0; do
+    case "$1" in 
+  -h | --he | --hel | --help)
+    echo $"Usage: ldd [OPTION]... FILE...
+  -h, --help              print this help and exit
+  -c, --clean             clean config file
+  -v, --verbose           print all information
+"
+    exit 0
+    ;;
+  -v | --verb | --verbo | --verbos | --verbose)
+    set -x
+    shift
+    ;;
+  -c | --cl | --cle | --clea | --clean)
+    rm $CONFIG
+    pkill vde_switch
+    sudo ip tuntap del tap0 mode tap
+    exit 0
+    ;;
+  *)
+    break
+    ;;
+  esac
+done
+
+
+case $$ in
+    1)
+    # Inside UML.
+    STATE=${STATE:-1}
+
+    case $STATE in
+        1)
+        echo "[+] Set environment variable"
+        export TERM=xterm
+        export PATH=/usr/local/bin:/usr/bin:/bin:/sbin:/usr/local/sbin:/usr/sbin
+        export HOME=$home
+        
+        echo "[+] Setup getty"
+        export STATE=2
+        exec setsid python -c '
+import os, sys
+os.close(0)
+os.open("/dev/tty0", os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK, 0)
+os.dup2(0, 1)
+os.dup2(0, 2)
+# os.tcsetpgrp(0, 1)
+os.execv(sys.argv[1], [sys.argv[1]])' "$PROGNAME"
+        ;;
+        2)
+        echo "[+] Setup filesystems"
+        mount -n -t proc proc /proc
+        mount -n -t sysfs sysfs /sys
+        mount -n -t tmpfs tmpfs /tmp -o rw,nosuid,nodev
+        for fs in /var/run /var/tmp /var/log /tmp; do
+            mount -t tmpfs tmpfs $fs -o rw,nosuid,nodev
+        done
+
+        ;;
+    esac
+
+    echo "[+] Start syslog"
+    rsyslogd
+
+    echo "[+] Set interfaces"
+    /sbin/ifconfig eth0 ${uml_ip} up
+    route add default gw ${host_ip}
+    
+    ping -c 2 ${tap_ip} 
+    curl -m 2 http://220.181.57.217
+
+    echo "[+] Drop to a shell"
+    cd $(dirname "$PROGNAME")
+    exec /bin/bash
+
+    ;;
+    *)
+    # Inside host.
+    host_if=`ls /sys/class/net/ | grep -v -E "lo|tap" | head -n 1`
+    host_ip=`ifconfig ${host_if} | grep "inet " | awk '{print $2}' | sed 's/addr://'`
+    tap_ip=${host_ip%.*}.193
+
+    echo "[+] Config tap device"
+    ifconfig | grep tap0
+    if [ $? -eq 1 ]; then
+        sudo modprobe tun
+        sudo ip tuntap add dev tap0 mode tap group vagrant
+        sudo chown root:vagrant /dev/net/tun
+        sudo ifconfig tap0 ${tap_ip} netmask 255.255.255.192 up
+
+        sudo sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
+        sudo sh -c "echo 1 > /proc/sys/net/ipv4/conf/tap0/proxy_arp"
+
+        vde_switch --tap tap0 &
+        disown
+    fi
+
+    echo "[+] Config route"
+    if [ -z "$uml_ip" ]; then
+        uml_ip=${host_ip%.*}.`shuf -i 194-255 -n 1`
+
+        sudo route add -net ${host_ip%.*}.192/26 gw ${tap_ip} dev tap0
+        sudo arp -Ds ${uml_ip} ${host_if} pub
+    fi
+
+    echo "[+] Write config"
+    echo > $CONFIG
+    echo "uml_ip="$uml_ip >> $CONFIG
+    echo "host_ip="$host_ip >> $CONFIG
+    echo "tap_ip="$tap_ip >> $CONFIG
+    echo "home="$HOME >> $CONFIG
+
+    ./linux rootfstype=hostfs rw mem=256M eth0=vde init=$(readlink -f "$PROGNAME")
+    reset
+    ;;
+esac
+

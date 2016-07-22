@@ -1,0 +1,748 @@
+# If you say Y here, it will be possible to plug wrapper-driven binary formats
+# into the kernel. You will like this especially when you use programs that need
+# an interpreter to run like Java, Python, .NET or Emacs-Lisp. It's also useful
+# if you often run DOS executables under the Linux DOS emulator DOSEMU (read the
+# DOSEMU-HOWTO, available from http://www.tldp.org/docs.html#howto). Once you
+# have registered such a binary class with the kernel, you can start one of
+# those programs simply by typing in its name at a shell prompt; Linux will
+# automatically feed it to the correct interpreter.
+
+# You can do other nice things, too. Read the file Documentation/binfmt_misc.txt
+# to learn how to use this feature, Documentation/java.txt for information about
+# how to include Java support. and Documentation/mono.txt for information about
+# how to include Mono-based .NET support.
+
+# To use binfmt_misc, you will need to mount it: mount binfmt_misc -t
+# binfmt_misc /proc/sys/fs/binfmt_misc
+
+# You may say M here for module support and later load the module when you have
+# use for it; the module is called binfmt_misc. If you don't know what to answer
+# at this point, say Y.
+CONFIG_BINFMT_MISC=y
+
+# While the User-Mode Linux port uses its own root file system for booting and
+# normal file access, this module lets the UML user access files stored on the
+# host. It does not require any network connection between the Host and UML. An
+# example use of this might be:
+
+# mount none /tmp/fromhost -t hostfs -o /tmp/umlshare
+
+# where /tmp/fromhost is an empty directory inside UML and /tmp/umlshare is a
+# directory on the host with files the UML user wishes to access.
+
+# For more information, see http://user-mode-linux.sourceforge.net/hostfs.html.
+
+# If you'd like to be able to work with files stored on the host, say Y or M
+# here; otherwise say N.
+CONFIG_HOSTFS=y
+
+# If you say Y here, you will have some control over the system even if the
+# system crashes for example during kernel debugging (e.g., you will be able to
+# flush the buffer cache to disk, reboot the system immediately or dump some
+# status information). A key for each of the possible requests is provided.
+
+# This is the feature normally accomplished by pressing a key while holding
+# SysRq (Alt+PrintScreen).
+
+# On UML, this is accomplished by sending a "sysrq" command with mconsole,
+# followed by the letter for the requested command.
+
+# The keys are documented in Documentation/sysrq.txt. Don't say Y unless you
+# really know what this hack does.
+CONFIG_MAGIC_SYSRQ=y
+
+# Inter Process Communication is a suite of library functions and system calls
+# which let processes (running programs) synchronize and exchange information.
+# It is generally considered to be a good thing, and some programs won't run
+# unless you say Y here. In particular, if you want to run the DOS emulator
+# dosemu under Linux (read the DOSEMU-HOWTO, available from
+# http://www.tldp.org/docs.html#howto), you'll need to say Y here.
+
+# You can find documentation about IPC with "info ipc" and also in section 6.4
+# of the Linux Programmer's Guide, available from
+# http://www.tldp.org/guides.html.
+CONFIG_SYSVIPC=y
+
+# POSIX variant of message queues is a part of IPC. In POSIX message queues
+# every message has a priority which decides about succession of receiving it by
+# a process. If you want to compile and run programs written e.g. for Solaris
+# with use of its POSIX message queues (functions mq_*) say Y here.
+
+# POSIX message queues are visible as a filesystem called 'mqueue' and can be
+# mounted somewhere if you want to do filesystem operations on message queues.
+
+# If unsure, say Y.
+CONFIG_POSIX_MQUEUE=y
+
+# This is the old config entry that enables dynticks idle. We keep it around for
+# a little while to enforce backward compatibility with older config files.
+CONFIG_NO_HZ=y
+
+# This option enables high resolution timer support. If your hardware is not
+# capable then this option only increases the size of the kernel image.
+CONFIG_HIGH_RES_TIMERS=y
+
+# If you say Y here, a user level program will be able to instruct the kernel
+# (via a special system call) to write process accounting information to a file:
+# whenever a process exits, information about that process will be appended to
+# the file by the kernel. The information includes things such as creation time,
+# owning user, command name, memory usage, controlling terminal etc. (the
+# complete list is in the struct acct in include/linux/acct.h). It is up to the
+# user level program to do useful things with this information. This is
+# generally a good idea, so say Y.
+CONFIG_BSD_PROCESS_ACCT=y
+
+# This option enables the complete Linux kernel ".config" file contents to be
+# saved in the kernel. It provides documentation of which kernel options are
+# used in a running kernel or in an on-disk kernel. This information can be
+# extracted from the kernel image file with the script scripts/extract-ikconfig
+# and used as input to rebuild the current kernel or to build another kernel. It
+# can also be extracted from a running kernel by reading /proc/config.gz if
+# enabled (below).
+CONFIG_IKCONFIG=y
+
+# This option enables access to the kernel configuration file through
+# /proc/config.gz.
+CONFIG_IKCONFIG_PROC=y
+
+# Select the minimal kernel log buffer size as a power of 2. The final size is
+# affected by LOG_CPU_MAX_BUF_SHIFT config parameter, see below. Any higher size
+# also might be forced by "log_buf_len" boot parameter.
+
+# Examples: 17 => 128 KB 16 => 64 KB 15 => 32 KB 14 => 16 KB 13 => 8 KB 12 => 4
+# KB
+CONFIG_LOG_BUF_SHIFT=14
+
+# This option adds support for grouping sets of processes together, for use with
+# process control subsystems such as Cpusets, CFS, memory controls or device
+# isolation. See - Documentation/scheduler/sched-design-CFS.txt (CFS) -
+# Documentation/cgroups/ (features for grouping, isolation and resource control)
+
+# Say N if unsure.
+CONFIG_CGROUPS=y
+
+# Provides a way to freeze and unfreeze all tasks in a cgroup.
+CONFIG_CGROUP_FREEZER=y
+
+# Provides a cgroup implementing whitelists for devices which a process in the
+# cgroup can mknod or open.
+CONFIG_CGROUP_DEVICE=y
+
+# This option will let you create and manage CPUSETs which allow dynamically
+# partitioning a system into sets of CPUs and Memory Nodes and assigning tasks
+# to run only within those sets. This is primarily useful on large SMP or NUMA
+# systems.
+
+# Say N if unsure.
+CONFIG_CPUSETS=y
+
+# Provides a simple Resource Controller for monitoring the total CPU consumed by
+# the tasks in a cgroup.
+CONFIG_CGROUP_CPUACCT=y
+
+# This feature lets CPU scheduler recognize task groups and control CPU
+# bandwidth allocation to such task groups. It uses cgroups to group tasks.
+CONFIG_CGROUP_SCHED=y
+
+# Generic block IO controller cgroup interface. This is the common cgroup
+# interface which should be used by various IO controlling policies.
+
+# Currently, CFQ IO scheduler uses it to recognize task groups and control disk
+# bandwidth allocation (proportional time slice allocation) to such task groups.
+# It is also used by bio throttling logic in block layer to implement upper
+# limit in IO rates on a device.
+
+# This option only enables generic Block IO controller infrastructure. One needs
+# to also enable actual IO controlling logic/policy. For enabling proportional
+# weight division of disk bandwidth in CFQ, set CFQ_GROUP_IOSCHED=y; for
+# enabling throttling policy, set BLK_DEV_THROTTLING=y.
+
+# See Documentation/cgroups/blkio-controller.txt for more information.
+CONFIG_BLK_CGROUP=y
+
+# Provides the way to make tasks work with different objects using the same id.
+# For example same IPC id may refer to different objects or same user id or pid
+# may refer to different tasks when used in different namespaces.
+CONFIG_NAMESPACES=y
+
+# This option adds code that switches the layout of the "block" class devices,
+# to not show up in /sys/class/block/, but only in /sys/block/.
+
+# This switch is only active when the sysfs.deprecated=1 boot option is passed
+# or the SYSFS_DEPRECATED_V2 option is set.
+
+# This option allows new kernels to run on old distributions and tools, which
+# might get confused by /sys/class/block/. Since 2007/2008 all major
+# distributions and tools handle this just fine.
+
+# Recent distributions and userspace tools after 2009/2010 depend on the
+# existence of /sys/class/block/, and will not work with this option enabled.
+
+# Only if you are using a new kernel on an old distribution, you might need to
+# say Y here.
+CONFIG_SYSFS_DEPRECATED=y
+
+# Enabling this option will pass "-Os" instead of "-O2" to your compiler
+# resulting in a smaller kernel.
+
+# If unsure, say N.
+CONFIG_CC_OPTIMIZE_FOR_SIZE=n
+
+# The regular slab allocator that is established and known to work well in all
+# environments. It organizes cache hot objects in per cpu and per node queues.
+CONFIG_SLAB=y
+
+# Kernel modules are small pieces of compiled code which can be inserted in the
+# running kernel, rather than being permanently built into the kernel. You use
+# the "modprobe" tool to add (and sometimes remove) them. If you say Y here,
+# many parts of the kernel can be built as modules (by answering M instead of Y
+# where indicated): this is most useful for infrequently used options which are
+# not required for booting. For more information, see the man pages for
+# modprobe, lsmod, modinfo, insmod and rmmod.
+
+# If you say Y here, you will need to run "make modules_install" to put the
+# modules under /lib/modules/ where modprobe can find them (you may need to be
+# root to do this).
+
+# If unsure, say Y.
+CONFIG_MODULES=y
+
+# Without this option you will not be able to unload any modules (note that some
+# modules may not be unloadable anyway), which makes your kernel smaller, faster
+# and simpler. If unsure, say Y.
+CONFIG_MODULE_UNLOAD=y
+
+# The deadline I/O scheduler is simple and compact. It will provide CSCAN
+# service with FIFO expiration of requests, switching to a new point in the
+# service tree and doing a batch of IO from there in case of expiry.
+CONFIG_IOSCHED_DEADLINE=y
+
+# The no-op I/O scheduler is a minimal scheduler that does basic merging and
+# sorting. Its main uses include non-disk based block devices like memory
+# devices, and specialised software or hardware environments that do their own
+# scheduling and require only minimal assistance from the kernel.
+CONFIG_IOSCHED_NOOP=y
+
+# The CFQ I/O scheduler tries to distribute bandwidth equally among all
+# processes in the system. It should provide a fair and low latency working
+# environment, suitable for both desktop and server systems.
+
+# This is the default I/O scheduler.
+CONFIG_IOSCHED_CFQ=y
+
+# Default I/O scheduler.
+CONFIG_DEFAULT_CFQ=y
+CONFIG_DEFAULT_IOSCHED="cfq"
+
+# The User-Mode Linux environment allows you to create virtual serial lines on
+# the UML that are usually made to show up on the host as ttys or ptys.
+
+# See http://user-mode-linux.sourceforge.net/old/input.html for more information
+# and command line examples of how to use this facility.
+
+# Unless you have a specific reason for disabling this, say Y.
+CONFIG_SSL=y
+
+# This option enables support for attaching UML consoles and serial lines to a
+# device similar to /dev/null. Data written to it disappears and there is never
+# any data to be read.
+CONFIG_NULL_CHAN=y
+
+# This option enables support for attaching UML consoles and serial lines to
+# host portals. They may be accessed with 'telnet <host> <port number>'. Any
+# number of consoles and serial lines may be attached to a single portal,
+# although what UML device you get when you telnet to that portal will be
+# unpredictable. It is safe to say 'Y' here.
+CONFIG_PORT_CHAN=y
+
+# This option enables support for attaching UML consoles and serial lines to
+# host pseudo-terminals. Access to both traditional pseudo-terminals (/dev/pty*)
+# and pts pseudo-terminals are controlled with this option. The assignment of
+# UML devices to host devices will be announced in the kernel message log. It is
+# safe to say 'Y' here.
+CONFIG_PTY_CHAN=y
+
+# This option enables support for attaching UML consoles and serial lines to
+# host terminals. Access to both virtual consoles (/dev/tty*) and the slave side
+# of pseudo-terminals (/dev/ttyp* and /dev/pts/*) are controlled by this option.
+# It is safe to say 'Y' here.
+CONFIG_TTY_CHAN=y
+
+# This option enables support for attaching UML consoles and serial lines to
+# xterms. Each UML device so assigned will be brought up in its own xterm. It is
+# safe to say 'Y' here.
+CONFIG_XTERM_CHAN=y
+
+# This is the string describing the channel to which all consoles except the
+# main console will be attached by default. This value can be overridden from
+# the command line. The default value is "xterm", which brings them up in
+# xterms. It is safe to leave this unchanged, although you may wish to change
+# this if you expect the UML that you build to be run in environments which
+# don't have X or xterm available.
+CONFIG_CON_CHAN="pts"
+
+# This is the string describing the channel to which the serial lines will be
+# attached by default. This value can be overridden from the command line. The
+# default value is "pty", which attaches them to traditional pseudo-terminals.
+# It is safe to leave this unchanged, although you may wish to change this if
+# you expect the UML that you build to be run in environments which don't have a
+# set of /dev/pty* devices.
+CONFIG_SSL_CHAN="pts"
+
+# This option enables UML sound support. If enabled, it will pull in soundcore
+# and the UML hostaudio relay, which acts as a intermediary between the host's
+# dsp and mixer devices and the UML sound system. It is safe to say 'Y' here.
+CONFIG_UML_SOUND=n
+
+# To disable user space helper program execution at by default specify an empty
+# string here. This setting can still be altered via /proc/sys/kernel/hotplug or
+# via /sys/kernel/uevent_helper later at runtime.
+CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
+
+# This creates a tmpfs/ramfs filesystem instance early at bootup. In this
+# filesystem, the kernel driver core maintains device nodes with their default
+# names and permissions for all registered devices with an assigned major/minor
+# number. Userspace can modify the filesystem content as needed, add symlinks,
+# and apply needed permissions. It provides a fully functional /dev directory,
+# where usually udev runs on top, managing permissions and adding meaningful
+# symlinks. In very limited environments, it may provide a sufficient functional
+# /dev without any further help. It also allows simple rescue systems, and
+# reliably handles dynamic major/minor numbers.
+
+# Notice: if TMPFS isn't enabled, the simpler ramfs file system will be used
+# instead.
+CONFIG_DEVTMPFS=y
+
+# This will instruct the kernel to automatically mount the devtmpfs filesystem
+# at /dev, directly after the kernel has mounted the root filesystem. The
+# behavior can be overridden with the commandline parameter: devtmpfs.mount=0|1.
+# This option does not affect initramfs based booting, here the devtmpfs
+# filesystem always needs to be mounted manually after the rootfs is mounted.
+# With this option enabled, it allows to bring up a system in rescue mode with
+# init=/bin/sh, even when the /dev directory on the rootfs is completely empty.
+CONFIG_DEVTMPFS_MOUNT=y
+
+# The User-Mode Linux port includes a driver called UBD which will let you
+# access arbitrary files on the host computer as block devices. Unless you know
+# that you do not need such virtual block devices say Y here.
+CONFIG_BLK_DEV_UBD=y
+
+# Saying Y here will allow you to use a regular file as a block device; you can
+# then create a file system on that block device and mount it just as you would
+# mount other block devices such as hard drive partitions, CD-ROM drives or
+# floppy drives. The loop devices are block special device files with major
+# number 7 and typically called /dev/loop0, /dev/loop1 etc.
+
+# This is useful if you want to check an ISO 9660 file system before burning the
+# CD, or if you want to use floppy images without first writing them to floppy.
+# Furthermore, some Linux distributions avoid the need for a dedicated Linux
+# partition by keeping their complete root file system inside a DOS FAT file
+# using this loop device driver.
+
+# To use the loop device, you need the losetup utility, found in the util-linux
+# package, see <ftp://ftp.kernel.org/pub/linux/utils/util-linux/>.
+
+# The loop device driver can also be used to "hide" a file system in a disk
+# partition, floppy, or regular file, either using encryption (scrambling the
+# data) or steganography (hiding the data in the low bits of, say, a sound
+# file). This is also safe if the file resides on a remote file server.
+
+# There are several ways of encrypting disks. Some of these require kernel
+# patches. The vanilla kernel offers the cryptoloop option and a Device Mapper
+# target (which is superior, as it supports all file systems). If you want to
+# use the cryptoloop, say Y to both LOOP and CRYPTOLOOP, and make sure you have
+# a recent (version 2.12 or later) version of util-linux. Additionally, be aware
+# that the cryptoloop is not safe for storing journaled filesystems.
+
+# Note that this loop device has nothing to do with the loopback device used for
+# network connections from the machine to itself.
+
+# To compile this driver as a module, choose M here: the module will be called
+# loop.
+
+# Most users will answer N here.
+CONFIG_BLK_DEV_LOOP=y
+
+# Saying Y here will allow your computer to be a client for network block
+# devices, i.e. it will be able to use block devices exported by servers (mount
+# file systems on them etc.). Communication between client and server works over
+# TCP/IP networking, but to the client program this is hidden: it looks like a
+# regular local file access to a block device special file such as /dev/nd0.
+
+# Network block devices also allows you to run a block-device in userland
+# (making server and client physically the same computer, communicating using
+# the loopback network device).
+
+# Read Documentation/blockdev/nbd.txt for more information, especially about
+# where to find the server code, which runs in user space and does not need
+# special kernel support.
+
+# Note that this has nothing to do with the network file systems NFS or Coda;
+# you can say N here even if you intend to use NFS or Coda.
+
+# To compile this driver as a module, choose M here: the module will be called
+# nbd.
+
+# If unsure, say N.
+CONFIG_BLK_DEV_NBD=y
+
+# This is essentially a bit-bucket device (i.e. traffic you send to this device
+# is consigned into oblivion) with a configurable IP address. It is most
+# commonly used in order to make your currently inactive SLIP address seem like
+# a real address for local programs. If you use SLIP or PPP, you might want to
+# say Y here. Since this thing often comes in handy, the default is Y. It won't
+# enlarge your kernel either. What a deal. Read about it in the Network
+# Administrator's Guide, available from http://www.tldp.org/docs.html#guide.
+
+# To compile this driver as a module, choose M here: the module will be called
+# dummy.
+CONFIG_DUMMY=n
+
+# The maximum number of legacy PTYs that can be used at any one time. The
+# default is 256, and should be more than enough. Embedded systems may want to
+# reduce this to save memory.
+
+# When not in use, each legacy PTY occupies 12 bytes on 32-bit architectures and
+# 24 bytes on 64-bit architectures.
+CONFIG_LEGACY_PTY_COUNT=32
+
+# Hardware Random Number Generator Core infrastructure.
+
+# To compile this driver as a module, choose M here: the module will be called
+# rng-core. This provides a device that's usually called /dev/hwrng, and which
+# exposes one of possibly several hardware random number generators.
+
+# These hardware random number generators do not feed directly into the kernel's
+# random number generator. That is usually handled by the "rngd" daemon.
+# Documentation/hw_random.txt has more information.
+
+# If unsure, say Y.
+CONFIG_HW_RANDOM=y
+
+# This option enables UML's "hardware" random number generator. It attaches
+# itself to the host's /dev/random, supplying as much entropy as the host has,
+# rather than the small amount the UML gets from its own drivers. It registers
+# itself as a standard hardware random number generator, major 10, minor 183,
+# and the canonical device name is /dev/hwrng. The way to make use of this is to
+# install the rng-tools package (check your distro, or download from
+# http://sourceforge.net/projects/gkernel/). rngd periodically reads /dev/hwrng
+# and injects the entropy into /dev/random.
+CONFIG_UML_RANDOM=y
+
+# Unless you really know what you are doing, you should say Y here. The reason
+# is that some programs need kernel networking support even when running on a
+# stand-alone machine that isn't connected to any other computer.
+
+# If you are upgrading from an older kernel, you should consider updating your
+# networking tools too because changes in the kernel and the tools often go hand
+# in hand. The tools are contained in the package net-tools, the location and
+# version number of which are given in Documentation/Changes.
+
+# For a general introduction to Linux networking, it is highly recommended to
+# read the NET-HOWTO, available from http://www.tldp.org/docs.html#howto.
+CONFIG_NET=y
+
+# The Packet protocol is used by applications which communicate directly with
+# network devices without an intermediate network protocol implemented in the
+# kernel, e.g. tcpdump. If you want them to work, choose Y.
+
+# To compile this driver as a module, choose M here: the module will be called
+# af_packet.
+
+# If unsure, say Y.
+CONFIG_PACKET=y
+
+# If you say Y here, you will include support for Unix domain sockets; sockets
+# are the standard Unix mechanism for establishing and accessing network
+# connections. Many commonly used programs such as the X Window system and
+# syslog use these sockets even if your machine is not connected to any network.
+# Unless you are working on an embedded system or something similar, you
+# therefore definitely want to say Y here.
+
+# To compile this driver as a module, choose M here: the module will be called
+# unix. Note that several important services won't work correctly if you say M
+# here and then neglect to load the module.
+
+# Say Y unless you know what you are doing.
+CONFIG_UNIX=y
+
+# These are the protocols used on the Internet and on most local Ethernets. It
+# is highly recommended to say Y here (this will enlarge your kernel by about
+# 400 KB), since some programs (e.g. the X window system) use TCP/IP even if
+# your machine is not connected to any other computer. You will get the
+# so-called loopback device which allows you to ping yourself (great fun,
+# that!).
+
+# For an excellent introduction to Linux networking, please read the Linux
+# Networking HOWTO, available from http://www.tldp.org/docs.html#howto.
+
+# If you say Y here and also to "/proc file system support" and "Sysctl support"
+# below, you can change various aspects of the behavior of the TCP/IP code by
+# writing to the (virtual) files in /proc/sys/net/ipv4/*; the options are
+# explained in the file Documentation/networking/ip-sysctl.txt.
+
+# Short answer: say Y.
+CONFIG_INET=y
+
+# Support for INET (TCP, DCCP, etc) socket monitoring interface used by native
+# Linux tools such as ss. ss is included in iproute2, currently downloadable at:
+
+# http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+
+# If unsure, say Y.
+CONFIG_INET_DIAG=y
+
+# Support for monitoring TCP transport protocols sockets.
+CONFIG_INET_TCP_DIAG=y
+
+# Support for UDP socket monitoring interface used by the ss tool. If unsure,
+# say Y.
+CONFIG_INET_UDP_DIAG=y
+
+# Support for Large Receive Offload (ipv4/tcp).
+
+# If unsure, say Y.
+CONFIG_INET_LRO=y
+
+# Support for IP version 6 (IPv6).
+
+# For general information about IPv6, see <https://en.wikipedia.org/wiki/IPv6>.
+# For specific information about IPv6 under Linux, see
+# Documentation/networking/ipv6.txt and read the HOWTO at
+# http://www.tldp.org/HOWTO/Linux+IPv6-HOWTO/
+
+# To compile this protocol support as a module, choose M here: the module will
+# be called ipv6.
+CONFIG_IPV6=n
+
+# Disable wireless support.
+CONFIG_WIRELESS=n
+
+# This section contains all the pre 802.11 and 802.11 wireless device drivers.
+# For a complete list of drivers and documentation on them refer to the wireless
+# wiki:
+
+# http://wireless.kernel.org/en/users/Drivers
+CONFIG_WLAN=n
+
+# While the User-Mode port cannot directly talk to any physical hardware
+# devices, this choice and the following transport options provide one or more
+# virtual network devices through which the UML kernels can talk to each other,
+# the host, and with the host's help, machines on the outside world.
+
+# For more information, including explanations of the networking and sample
+# configurations, see
+# http://user-mode-linux.sourceforge.net/old/networking.html.
+
+# If you'd like to be able to enable networking in the User-Mode linux
+# environment, say Y; otherwise say N. Note that you must enable at least one of
+# the following transport options to actually make use of UML networking.
+
+#     UML_NET           "Virtual network device"
+#     UML_NET_ETHERTAP  "Ethertap transport"
+#     UML_NET_TUNTAP    "TUN/TAP transport"
+#     UML_NET_SLIP      "SLIP transport"
+#     UML_NET_DAEMON    "Daemon transport"
+#     UML_NET_VDE       "VDE transport"
+#     UML_NET_MCAST     "Multicast transport"
+#     UML_NET_PCAP      "pcap transport"
+#     UML_NET_SLIRP     "SLiRP transport"
+CONFIG_UML_NET=y
+
+# The UML TUN/TAP network transport allows a UML instance to exchange packets
+# with the host over a TUN/TAP device. This option will only work with a 2.4
+# host, unless you've applied the TUN/TAP patch to your 2.2 host kernel.
+
+# To use this transport, your host kernel must have support for TUN/TAP devices,
+# either built-in or as a module.
+CONFIG_UML_NET_TUNTAP=y
+
+# This User-Mode Linux network transport allows one or more running UMLs on a
+# single host to communicate with each other and also with the rest of the world
+# using Virtual Distributed Ethernet, an improved fork of uml_switch.
+
+# You must have libvdeplug installed in order to build the vde transport into
+# UML.
+
+# To use this form of networking, you will need to run vde_switch on the host.
+
+# For more information, see http://wiki.virtualsquare.org/ That site has a good
+# overview of what VDE is and also examples of the UML command line to use to
+# enable VDE networking.
+
+# If you need UML networking with VDE, say Y.
+CONFIG_UML_NET_VDE=y
+
+# Disable transport options.
+CONFIG_UML_NET_ETHERTAP=n
+CONFIG_UML_NET_SLIP=n
+CONFIG_UML_NET_DAEMON=n
+CONFIG_UML_NET_MCAST=n
+CONFIG_UML_NET_PCAP=n
+CONFIG_UML_NET_SLIRP=n
+
+# This config option is here only for backward compatibility. ext3 filesystem is
+# now handled by the ext4 driver.
+CONFIG_EXT3_FS=y
+CONFIG_EXT3_FS_POSIX_ACL=n
+CONFIG_EXT3_FS_SECURITY=n
+
+# This is the next generation of the ext3 filesystem.
+
+# Unlike the change from ext2 filesystem to ext3 filesystem, the on-disk format
+# of ext4 is not forwards compatible with ext3; it is based on extent maps and
+# it supports 48-bit physical block numbers. The ext4 filesystem also supports
+# delayed allocation, persistent preallocation, high resolution time stamps, and
+# a number of other features to improve performance and speed up fsck time. For
+# more information, please see the web pages at http://ext4.wiki.kernel.org.
+
+# The ext4 filesystem supports mounting an ext3 filesystem; while there are some
+# performance gains from the delayed allocation and inode table readahead, the
+# best performance gains require enabling ext4 features in the filesystem using
+# tune2fs, or formatting a new filesystem as an ext4 filesystem initially.
+# Without explicit enabling of ext4 features, the on disk filesystem format
+# stays fully backward compatible.
+
+# To compile this file system support as a module, choose M here. The module
+# will be called ext4.
+
+# If unsure, say N.
+CONFIG_EXT4_FS=y
+
+# POSIX Access Control Lists (ACLs) support permissions for users and groups
+# beyond the owner/group/world scheme.
+
+# To learn more about Access Control Lists, visit the POSIX ACLs for Linux
+# website http://acl.bestbits.at/.
+
+# If you don't know what Access Control Lists are, say N
+CONFIG_EXT4_FS_POSIX_ACL=n
+
+# Security labels support alternative access control models implemented by
+# security modules like SELinux. This option enables an extended attribute
+# handler for file security labels in the ext4 filesystem.
+
+# If you are not using a security module that requires using extended attributes
+# for file security labels, say N.
+CONFIG_EXT4_FS_SECURITY=n
+
+# Allow the ext4 file system driver code to be used for ext2 file system mounts.
+# This allows users to reduce their compiled kernel size by using one file
+# system driver for ext2, ext3, and ext4 file systems.
+CONFIG_EXT4_USE_FOR_EXT2=y
+
+# Disable ReiserFS.
+CONFIG_REISERFS_FS=n
+
+# An overlay filesystem combines two filesystems - an 'upper' filesystem and a
+# 'lower' filesystem. When a name exists in both filesystems, the object in the
+# 'upper' filesystem is visible while the object in the 'lower' filesystem is
+# either hidden or, in the case of directories, merged with the 'upper' object.
+
+# For more information see Documentation/filesystems/overlayfs.txt
+CONFIG_OVERLAY_FS=y
+
+# If you say Y here, you will be able to set per user limits for disk usage
+# (also called disk quotas). Currently, it works for the ext2, ext3, ext4, jfs,
+# ocfs2 and reiserfs file systems. Note that gfs2 and xfs use their own quota
+# system. Ext3, ext4 and reiserfs also support journaled quotas for which you
+# don't need to run quotacheck(8) after an unclean shutdown. For further
+# details, read the Quota mini-HOWTO, available from
+# http://www.tldp.org/docs.html#howto, or the documentation provided with the
+# quota tools. Probably the quota support is only useful for multi user systems.
+# If unsure, say N.
+CONFIG_QUOTA=n
+
+# The automounter is a tool to automatically mount remote file systems on
+# demand. This implementation is partially kernel-based to reduce overhead in
+# the already-mounted case; this is unlike the BSD automounter (amd), which is a
+# pure user space daemon.
+
+# To use the automounter you need the user-space tools from
+# <ftp://ftp.kernel.org/pub/linux/daemons/autofs/v4/>; you also want to answer Y
+# to "NFS file system support", below.
+
+# To compile this support as a module, choose M here: the module will be called
+# autofs4. You will need to add "alias autofs autofs4" to your modules
+# configuration file.
+
+# If you are not a part of a fairly large, distributed network or don't have a
+# laptop which needs to dynamically reconfigure to the local network, you
+# probably do not need an automounter, and can say N here.
+CONFIG_AUTOFS4_FS=y
+
+# This is the standard file system used on CD-ROMs. It was previously known as
+# "High Sierra File System" and is called "hsfs" on other Unix systems. The
+# so-called Rock-Ridge extensions which allow for long Unix filenames and
+# symbolic links are also supported by this driver. If you have a CD-ROM drive
+# and want to do more with it than just listen to audio CDs and watch its LEDs,
+# say Y (and read Documentation/filesystems/isofs.txt and the CD-ROM-HOWTO,
+# available from http://www.tldp.org/docs.html#howto), thereby enlarging your
+# kernel by about 27 KB; otherwise say N.
+
+# To compile this file system support as a module, choose M here: the module
+# will be called isofs.
+CONFIG_ISO9660_FS=y
+
+# Joliet is a Microsoft extension for the ISO 9660 CD-ROM file system which
+# allows for long filenames in unicode format (unicode is the new 16 bit
+# character code, successor to ASCII, which encodes the characters of almost all
+# languages of the world; see http://www.unicode.org/ for more information). Say
+# Y here if you want to be able to read Joliet CD-ROMs under Linux.
+CONFIG_JOLIET=n
+
+# Provides a virtual ELF core file of the live kernel. This can be read with gdb
+# and other ELF tools. No modifications can be made using this mechanism.
+CONFIG_PROC_KCORE=y
+
+# Tmpfs is a file system which keeps all files in virtual memory.
+
+# Everything in tmpfs is temporary in the sense that no files will be created on
+# your hard drive. The files live in memory and swap space. If you unmount a
+# tmpfs instance, everything stored therein is lost.
+
+# See Documentation/filesystems/tmpfs.txt for details.
+CONFIG_TMPFS=y
+
+# Say Y here to get to see options for various miscellaneous filesystems, such
+# as filesystems that came from other operating systems.
+
+# This option alone does not add any kernel code.
+
+# If you say N, all options in this submenu will be skipped and disabled; if
+# unsure, say Y here.
+CONFIG_MISC_FILESYSTEMS=n
+
+# The base Native Language Support. A number of filesystems depend on it (e.g.
+# FAT, JOLIET, NT, BEOS filesystems), as well as the ability of some filesystems
+# to use native languages (NCP, SMB).
+
+# If unsure, say Y.
+
+# To compile this code as a module, choose M here: the module will be called
+# nls_base.
+CONFIG_NLS=n
+
+# Tell gcc to warn at build time for stack frames larger than this. Setting this
+# too low will cause a lot of warnings. Setting it to 0 disables the warning.
+# Requires gcc 4.4
+CONFIG_FRAME_WARN=1024
+
+# Say Y here if you are developing drivers or trying to debug and identify
+# kernel problems.
+CONFIG_DEBUG_KERNEL=y
+
+# If you say Y here the resulting kernel image will include debugging info
+# resulting in a larger kernel image. Say Y here only if you plan to use gdb to
+# debug the kernel. If you don't debug the kernel, you can say N.
+CONFIG_DEBUG_INFO=y
+
+# If you say N here, the resulting kernel will be slightly smaller and faster.
+# However, if neither FRAME_POINTER nor ARM_UNWIND are enabled, when a problem
+# occurs with the kernel, the information that is reported is severely limited.
+CONFIG_FRAME_POINTER=y
+
+# This option determines the size of UML kernel stacks. They will be 1 << order
+# pages. The default is OK unless you're running Valgrind on UML, in which case,
+# set this to 3.
+CONFIG_KERNEL_STACK_ORDER=1
